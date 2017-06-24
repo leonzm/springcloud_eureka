@@ -42,8 +42,16 @@ Ribbon 是一个基于 HTTP 和 TCP 的客户端负载均衡器，通过客户�
 4.在调用第三方服务的地方，通过自动注入 RestTemplate 来调用第三方服务，注意访问地址是服务名，而不是一个具体的地址，如：ConsumeController
 5.在 application.properties 中配置 Eureka 服务注册中心的位置，启动应用后，就可以通过该 ribbon 应用访问第三方服务了
 
-
-
+## 常用概念及配置
+* Eureka 中有 Region 和 Zone 的概念，一个 Region 中可以包含多个 Zone，每个服务客户端需要被注册到一个 Zone 中，所以每个客户端对应一个
+Region 和一个 Zone。在进行服务调用的时候，优先访问同处一个 Zone 中的服务提供方，若访问不到，就访问其他的 Zone
+* eureka.instance.lease-renewal-interval-in-seconds 参数用于定义服务续约任务的调用间隔时间，默认为30秒
+* eureka.instance.lease-expiration-duratioin-in-seconds 参数用于定义服务失效的时间，默认为90秒
+* eureka.server.enable-self-preservation 参数控制是否开启注册中心的保护机制，默认为 true 开启状态，建议设置为 false 关闭，
+以确保注册中心可以将不可用的实例正确剔除
+> Eureka Server 在运行期间，会统计心跳失败的比例在15分钟之内是否低于85%，如果出现低于的情况（通常是由于网络不稳定导致），Eureka Server
+会将当前的实例注册信息保护起来，让这些实例不会过期，尽可能保护这些信息。但这时候很可能会出现服务调用失败的情况，所以客户端需要有容错机制，
+比如可以使用请求重试、断路器等机制。
 
 
 
