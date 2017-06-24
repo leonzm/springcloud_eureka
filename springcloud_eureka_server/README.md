@@ -29,5 +29,21 @@
 * 通过 eureka.instance.prefer-ip-address=true 的配置，强制使用 IP 地址的形式来注册服务的地址，而不是主机名，该值默认为 false
 
 ## 服务发现与消费
+* 服务发现的任务由 Eureka 的客户端完成，而服务消费的任务由 Ribbon 完成。
+Ribbon 是一个基于 HTTP 和 TCP 的客户端负载均衡器，通过客户端配置的 ribbonServerList 服务端列表去轮询访问以达到均衡负载的作用。
+当 Ribbo 和 Eureka 联合使用时，Ribbon 的服务实例清单 RibbonServerList 会被 DiscoveryEnabledNIWSServerList 重写，扩展成从 Eureka
+注册中心中获取服务等列表。同时它也会用 NIWSDiscoveryPing 来取代 IPing，将职责委托给 Eureka 来确定服务端是否已经启动
+* 实现步骤 
+> 1.启动服务注册中心 eureka-server 以及 hello-service 服务（1到N个）
+2.创建一个 Spring Boot 的基础工程来实现服务消费者，如：springcloud_eureka_client_ribbon，并在 pom.xml 中，除 eureka 外，引入 Ribbon
+模块的依赖 spring-cloud-starter-ribbon
+3.在主类添加 @EnableDiscoveryClient 让该应用注册为 Eureka 客户端应用以获取服务发现的能力。同时，在主类中创建 RestTemplate 的 SpringBean
+实例，并通过 @LoadBalanced 注解开启客户端负载均衡，如：SpringcloudEurekaClientRibbonApplication
+4.在调用第三方服务的地方，通过自动注入 RestTemplate 来调用第三方服务，注意访问地址是服务名，而不是一个具体的地址，如：ConsumeController
+5.在 application.properties 中配置 Eureka 服务注册中心的位置，启动应用后，就可以通过该 ribbon 应用访问第三方服务了
+
+
+
+
 
 
