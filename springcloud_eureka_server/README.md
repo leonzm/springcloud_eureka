@@ -65,7 +65,7 @@ Region 和一个 Zone。在进行服务调用的时候，优先访问同处一�
 > management.context-path=/hello
   eureka.instance.statusPageUrlPath=${management.context-path}/info
   eureka.instance.healthCheckUrlPath=${management.context-path}/health
-* 监控检测 
+* 监控检测（重要）
 > 默认情况下，Eureka 各服务实例的健康检测是通过心跳来实现的，有可能会出现僵尸程序的问题，最好的方法是把 Eureka 客户端的健康检查交给 spring-boot-actuator
 模块的/health端点，步骤如下：
 1.pom.xml 中加入 spring-boot-starter-actuator 模块的依赖；
