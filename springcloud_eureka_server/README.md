@@ -52,6 +52,28 @@ Region 和一个 Zone。在进行服务调用的时候，优先访问同处一�
 > Eureka Server 在运行期间，会统计心跳失败的比例在15分钟之内是否低于85%，如果出现低于的情况（通常是由于网络不稳定导致），Eureka Server
 会将当前的实例注册信息保护起来，让这些实例不会过期，尽可能保护这些信息。但这时候很可能会出现服务调用失败的情况，所以客户端需要有容错机制，
 比如可以使用请求重试、断路器等机制。
+* eureka.client.enabled 启用 eureka 客户端，默认值为 true
+* eureka.client.eurekaServerReadTimeoutSeconds 读取 Eureka Server 信息的超时时间，单位为秒，默认为8
+* eureka.client.eurekaServerConnectTimeoutSeconds 连接 Eureka Server 的超时时间，单位为秒，默认为5
+* eureka.instance.instanceId 实例名配置，用于区别同一服务中不同实例的标识，默认规则：${spring.cloud.client.hostname}:${spring.application.name}:${spring.aaplication.instance_id:${server.port}}，
+所以，如果同一主机上启动多个实例会产生端口冲突，可同过设置实例名为 eureka.instance.instanceId=${spring.application.name}:${random.int} 来解决
 
+* 端点配置
+> 状态页和健康检查的 URL 在 Spring Cloud Eureka 中默认使用了 spring-boot-actuator 模块提供的/info端点和/health端点，分别用于服务注册中心根据应用
+健康来更改状态 和 在 Eureka 面板中单击实例时，无法访问到服务实例提供的信息接口。一般情况下不需要修改，但在一些特殊情况下，如为应用设置了 context-path后，
+会在 actuator 模块的监控端点增加一个前缀，这时，需要做类似的配置，为/info和/health端点也加上类似的配置：
+> management.context-path=/hello
+  eureka.instance.statusPageUrlPath=${management.context-path}/info
+  eureka.instance.healthCheckUrlPath=${management.context-path}/health
+* 监控检测 
+> 默认情况下，Eureka 各服务实例的健康检测是通过心跳来实现的，有可能会出现僵尸程序的问题，最好的方法是把 Eureka 客户端的健康检查交给 spring-boot-actuator
+模块的/health端点，步骤如下：
+1.pom.xml 中加入 spring-boot-starter-actuator 模块的依赖；
+2.在 application.properties 中增加参数配置 eureka.client.healthcheck.enabled=true；
+3.如果客户端的/health端点做了特殊处理，则也需为/health加上相应的配置
+
+* eureka.instance.preferIpAddress 是否优先使用 IP 地址作为主机名的标识，默认值为 false
+* eureka.instance.appname 服务名，默认取 spring.application.name 的配置值，如果没有则为 unknown
+* eureka.instance.hostname 主机名，不配置的时候将根据操作系统的主机名来获取
 
 
