@@ -46,7 +46,7 @@ Ribbon 是一个基于 HTTP 和 TCP 的客户端负载均衡器，通过客户�
 * Eureka 中有 Region 和 Zone 的概念，一个 Region 中可以包含多个 Zone，每个服务客户端需要被注册到一个 Zone 中，所以每个客户端对应一个
 Region 和一个 Zone。在进行服务调用的时候，优先访问同处一个 Zone 中的服务提供方，若访问不到，就访问其他的 Zone
 * eureka.instance.lease-renewal-interval-in-seconds 参数用于定义服务续约任务的调用间隔时间，默认为30秒
-* eureka.instance.lease-expiration-duratioin-in-seconds 参数用于定义服务失效的时间，默认为90秒
+* eureka.instance.lease-expiration-duration-in-seconds 参数用于定义服务失效的时间，默认为90秒
 * eureka.server.enable-self-preservation 参数控制是否开启注册中心的保护机制，默认为 true 开启状态，建议设置为 false 关闭，
 以确保注册中心可以将不可用的实例正确剔除
 > Eureka Server 在运行期间，会统计心跳失败的比例在15分钟之内是否低于85%，如果出现低于的情况（通常是由于网络不稳定导致），Eureka Server
